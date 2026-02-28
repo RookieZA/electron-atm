@@ -1,0 +1,140 @@
+February 2018
+  1.4.3 protocol-dependent header message support
+
+January 2018
+  1.4.2 checking entered terminal and PIN key values to be [^a-fA-F0-9]
+
+December 2017
+  1.4.1 clearButtonClasses() and clearIconClasses() refactored
+  1.4.0 Removed duplicated code from src/listeners/settings.js
+  1.3.9 Fixed bug with checking PIN length on state B
+  1.3.8 States History
+  1.3.7 Fixed bug with states_to on state K
+  1.3.6 Using atm-states v.0.6.5 (states_to is now Set, not Array)
+  1.3.5 processing EMV Configuration Commands
+  1.3.4 processNumericButtonPressed() now checks the PMXPN fit record to get the PIN length
+  1.3.3 Fixed bug with undisplayed numeric data stored in buffer B on state H 
+
+Novemeber 2017
+  1.3.2 Fixed Issue#6 - builder.build() cognitive complexity refactored
+  1.3.1 Fixed states page jumping through states
+  1.3.0 using ES6 in atm.js
+  1.2.9 using atm-trace v.0.3.2 to trace Map() instances properly
+  1.2.8 trace() moved to the separate npm module called 'atm-trace'
+  1.2.7 using atm-logging library
+
+October 2017
+	1.2.6 using document.getElementById instead of jQuery in controllers/log.js
+	1.2.5 FITsService moved to the separate npm module called 'atm-fits'
+	1.2.4 passing trace to FITsService()
+	1.2.3 ScreensService moved to the separate npm module called 'atm-screens'
+	1.2.2 passing trace to ScreensService()
+	1.2.1 'Parser' service moved to a separate npm module called 'ndc-parser'
+	1.2.0 Added 'ava' test framework that will replace 'jasmine'
+	1.1.9 ScreeTextService moved to a separate npm module called 'atm-screentext'
+	1.1.8 'cursor' service moved to a separate npm module called 'atm-cursor'
+	1.1.7 'pinblock' moved to a separate npm module called 'pinblock'
+	1.1.6 Showing "Create Card" button + redirecting to card creation form on a cards page when the button pressed
+	1.1.5 Saving ATM profile name
+	1.1.4 Removed default master key and PIN key + sticky bottom footer
+	1.1.3 Showing app version in footer + added alpha version release
+	1.1.2 Last used card is selected by default
+	1.1.1 Sending non-default LUNO to host
+	1.1.0 Added settings user input on start
+	1.0.0 Using 'lightcoral' color code for J states and 'palegreen' for I states
+	0.9.9 Added exit states list on a States page
+	0.9.8 using 'atm-hardware' npm module
+	0.9.7 implemented reply to 'Send Configuration Information'
+	0.9.6 Using atm-opcode-buffer npm module
+	0.9.5 StatesService moved to 'atm-states' npm module
+	0.9.4 StatesService(settings, log, this.trace)
+	0.9.3 Using 'atm-state-levels' npm module
+	0.9.2 Using 'atm-timestamp' npm module
+	0.9.1 'Processing Card' ATM status
+	0.9.0 Enabling/Disabling card reader form when Offline/Out-of-service
+	0.8.9 Updated Window title, README; added page images
+	0.8.8 Navigation buttons logic refactored
+	0.8.7 Displaying FIT records on a FITs page
+	0.8.6 getting payment scheme based on BIN
+	0.8.5 Validating New Card form
+	0.8.4 using jQuery from node_modules/
+	0.8.3 using Bootstrap from node_modules/
+	0.8.2 Showing Payment scheme whil adding a new card
+	0.8.1 Cards service: creating new cards, select from cards etc.
+	0.8.0 Fixed bug with connecting to host on start
+	0.7.9 Opcode service
+
+September 2017
+	0.7.8 Fixed form input sizes
+	0.7.7 Implemented proper navigation through application pages (ATM , States etc)
+	0.7.6 Buffer C max size changed to 32 bytes according to specification
+	0.7.5 Buffer B max size changed to 32 bytes according to specification
+	0.7.4 screen.actions - processing screen as a sequence of actions (e.g. 'clear_screen', 'insert_image' etc.)
+	0.7.3 Parsing journal printer and receipt printer data in Transaction Reply
+	0.7.2 Fixed "ISSUE-2: Nested objects are traced as [[object Object]]" 
+	0.7.1 Parsing 'ESC [ m' screen blinking and colour control
+	0.7.0 Showing dynamic on-screen data received from host
+	0.6.9 screen text coordinates 
+	0.6.8 CursorService() and ScreentTextService()
+	0.6.7 Showing on-screen text
+	0.6.6 Changing screens when ATM goes In-Service/Out-Of-service
+	0.6.5 Navbar bottom, containing Read Card form and ATM keys
+	0.6.4 Fixed bug with multiple connection handlers after network disconnect
+	0.6.3 Added navigation bar
+	0.6.2 State Search form
+	0.6.1 State navigator: basic state search 
+	0.6.0 State navigator: show the states that are not linked directly to state 000
+	0.5.9 Dynamic screen support (Screen built from data sent in Interactive Transaction Response)
+	0.5.8 Showing Opcode buffer in states navigator
+	0.5.7 cryto routines moved to CryptoService
+	0.5.6 Showing extension states in State Navigator
+	0.5.5 State Navigator is using bootstrap styling
+	0.5.4 Replying dummy message to 'Send Supply Counters' host command
+	0.5.3 Replying to 'Send Configuration ID' host command
+	0.5.2 Showing Key check values
+	0.5.1 Fixed ugly bug with incorrect ATM pinblock encoding
+	0.5.0 atm.getTerminalKey() and atm.getMasterKey()
+	0.4.9 Clearing Buffer B (or C) on entering state H
+	0.4.8 Processing state type H (Information Entry State)
+	0.4.7 Added Time Variant Number field to Transaction Request
+	0.4.6 Fixed bug with no opcode value set during the state Y processing 
+	0.4.5 Fixed bug with message coordination number rotation
+	0.4.4 Showing current state and screen
+	0.4.3 Saving encryption keys in a settings file
+
+August 2017
+	0.4.2 PIN Encryption support
+	0.4.1 Checking whether the ATM is already connected to the host
+	0.4.0 Processing Four FDK Selection state (state E)
+	0.3.9 Processing Buffer ID in state X (FDK Information Entry state)
+	0.3.8 Processing Amount Entry state (filling amount buffer etc.)
+	0.3.7 Disabling FDK buttons in UI (based on FDK Active Mask)
+	0.3.6 Processing FDK active mask for states X and Y
+	0.3.5 State Navigator: updating screen image when jumping through the states
+	0.3.4 Displaying ATM screen in states navigator
+	0.3.3 Displaying states graph using visjs network
+	0.3.2 Esc, Enter, Backspace shortcuts
+	0.3.1 Sending transaction requests
+
+July 2017
+	0.3.0 Filling PIN buffer on state B
+	0.2.9 FDK and PIN pad keyboard shotcuts
+	0.2.8 changing screens from img/ directory
+	0.2.7 timestamp service
+	0.2.6 Processing 'D ‐ Pre‐Set Operation Code Buffer State'
+	0.2.5 Processing state type K
+	0.2.4 Device Fitness Flow Select State processing
+	0.2.3 PIN & Language Select State processing
+	0.2.2 Barcode Read State processing
+	0.2.1 Handing network errors
+	0.2.0 Filled README and added screenshots
+	0.1.9 Implemented proper FIT table search by cardnumber
+	0.1.8 FITsService.getInstitutionByCardnumber()
+	0.1.7 FITsService: processing FITs sent from host
+	0.1.6 FITsService: parsing PIDDX, PFIID and PSTDX fields
+	0.1.5 FITsService utils: d2h(), decimal2hex(), leftpad()
+  	0.1.4 parse Load FIT Data message implemented
+  	0.1.3 ESC PE (Display Image files) screens support 
+  	0.1.2 Fixed failing test cases caused by missing jquery reference
+  	0.1.1 nodeRequire() -> require() 
+  	0.1.0 App licence changed to LGPLv2 

@@ -1,0 +1,185 @@
+﻿
+node.exe : (node:13508) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative 
+instead.
+At C:\Program Files\nodejs\npx.ps1:29 char:3
++   & $NODE_EXE $NPX_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:13508) [D...native instead.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+(Use `node --trace-deprecation ...` to show where the warning was created)
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should init terminal buffers (121ms)
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should parse track2 (113ms)
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should return null if track2 is invalid (108ms)
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should return false on empty message (103ms)
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should respond with "Command Reject" message to unknown Terminal Command host message
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should process "Go out-of-service" message properly and respond with "Ready" message
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should process "Go in-service" message properly and respond with "Ready" message
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should respond with "Command Reject" message to unknown Data Command host message
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should respond with "Command Reject" message to invalid "State Tables load" host message
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should respond with "Ready" message to "State Tables load" host message
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should show log error message when empty mask passed
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ FDK mask 000 should enable disable all the buttons
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ FDK mask 060 should enable C, D, F and G buttons
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ FDK mask 255 should enable all the buttons
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should leave the current FDK mask unchanged if new FDK mask is invalid
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ FDK mask 0100010000 should enable buttons A, E (Cancel) and F
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ FDK mask 0111111111 should enable all the buttons
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should return undefined if button value is not provided
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should perform case-insensitive check through active FDKs
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should set amount buffer
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should leave amount buffer unchanged if no value provided
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should set amount buffer properly when A button pressed
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should set amount buffer properly when B button pressed
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should set buffer B properly
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should set buffer C properly
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should process state Y without extension state
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should show error while processing state Y with extension state
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should process state Y with active button pressed
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should put the pressed button value to the oprcode buffer while processing state Y
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should not process state Y when inactive button pressed
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should set active FDK
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should put the pressed button into the opcode buffer
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should put the pressed button into the opcode buffer at proper location
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should leave opcode buffer unchanged if buffer location value is invalid
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should pass through ICC state +
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should pass through ICC state /
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should return proper message coordination number
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should rotate message coordination number
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should set ConfigID
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should get reply to 'Send Supply Counters' terminal command
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should get reply to 'Send Configuration ID' terminal command
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should reply with 'Ready' to Screen Data load command
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should reply with 'Command Reject' to Screen Data load command when no screens data provided
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should reply with 'Ready' to State Tables load command
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should reply with 'Command Reject' to State Tables load command when no valid state tables provided
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should reply with 'Ready' to FIT Data load command
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should reply with 'Command Reject' to FIT Data load command when no valid FITs provided
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should reply with 'Ready' to proper Configuration ID number load command
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should reply with 'Command Reject' to Configuration ID number load command without Config ID
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should return empty object in case of unknown command code
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should return config ID in response to 'Send Configuration ID'
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should return counters data in response to 'Send Supply Counters'
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should respond to 'Send Configuration Information'
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should process state A
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should process state B
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should process amount entry state F when no button pressed
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should process amount entry state F when A button pressed
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should process amount entry state F when B button pressed
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should process amount entry state F when C button pressed
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should process amount entry state F when D button pressed
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should not change state on amount entry state F if F, G, H or I button pressed
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should process state D
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should process state flow A -> D -> B
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should clear Buffer B while processing information entry state H
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should clear Buffer C while processing information entry state H
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should show error while processing information entry state H if param is not supported
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should process information entry state H with A button pressed
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should process information entry state H with B button pressed
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should process information entry state H with C button pressed
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should process information entry state H with D button pressed
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should process state J
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should show error while processing state K if FIT not found
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should return proper state entry while processing state K
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should process state W
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should read card
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ FDK A should be inactive on state B with PIN less than 4
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should continue with state processing on state B with A button pressed and PIN longer than 3
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should continue with state processing on state H with enabled button pressed
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should not continue with state processing on state H when disabled button pressed
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ should continue with default state processing
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ getBuffer(): should get PIN buffer
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ getBuffer(): should get buffer B
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ getBuffer(): should get buffer C
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ getBuffer(): should get opcode buffer
+  Γ£ö controllers ΓÇ║ atm ΓÇ║ getBuffer(): should get amount buffer
+  Γ£ö controllers ΓÇ║ builder ΓÇ║ should return true
+  Γ£ö controllers ΓÇ║ builder ΓÇ║ should return null on empty message
+  Γ£ö controllers ΓÇ║ builder ΓÇ║ should build solicited ready status message
+  Γ£ö controllers ΓÇ║ builder ΓÇ║ should build solicited command reject status message
+  Γ£ö controllers ΓÇ║ builder ΓÇ║ should build solicited specific command reject status message
+  Γ£ö controllers ΓÇ║ builder ΓÇ║ should build Unsolicited Transaction Request message with all data provided
+  Γ£ö controllers ΓÇ║ builder ΓÇ║ should build Unsolicited Transaction Request message without track2 provided
+  Γ£ö controllers ΓÇ║ builder ΓÇ║ should build Unsolicited Transaction Request message without opcode_buffer provided
+  Γ£ö controllers ΓÇ║ builder ΓÇ║ should build Unsolicited Transaction Request message without amount_buffer provided
+  Γ£ö controllers ΓÇ║ builder ΓÇ║ should build Unsolicited Transaction Request message without PIN_buffer provided
+  Γ£ö controllers ΓÇ║ builder ΓÇ║ should build Unsolicited Transaction Request message without Buufer B provided
+  Γ£ö controllers ΓÇ║ builder ΓÇ║ should build Unsolicited Transaction Request message without Buffer C provided
+  Γ£ö controllers ΓÇ║ builder ΓÇ║ should build Unsolicited Transaction Request message without Track 1 data provided
+  Γ£ö controllers ΓÇ║ builder ΓÇ║ should build 'Send Configuration Information' terminal state solicited status
+  Γ£ö controllers ΓÇ║ builder ΓÇ║ should build 'Send Configuration ID' terminal state solicited status
+  Γ£ö controllers ΓÇ║ builder ΓÇ║ should build 'Send Supply Counters' terminal state solicited status
+(node:13508) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+  Γ£ö controllers ΓÇ║ network ΓÇ║ should return true
+  Γ£ö controllers ΓÇ║ network ΓÇ║ should be able to get proper empty message length
+  Γ£ö controllers ΓÇ║ network ΓÇ║ should return the length for message.len === 10
+  Γ£ö controllers ΓÇ║ network ΓÇ║ should return the length for message.len === 16
+  Γ£ö controllers ΓÇ║ network ΓÇ║ should return the length for message.len === 255
+  Γ£ö controllers ΓÇ║ network ΓÇ║ should return the length for message.len === 256
+  Γ£ö controllers ΓÇ║ network ΓÇ║ should return the length for message.len === 2636
+  Γ£ö controllers ΓÇ║ network ΓÇ║ should send and trace the data
+  Γ£ö controllers ΓÇ║ network ΓÇ║ toggleConnect(): should disconnect if already connected
+  Γ£ö controllers ΓÇ║ network ΓÇ║ toggleConnect(): should try to connect if not yet connected
+(node:13508) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+  Γ£ö controllers ΓÇ║ processPinpadButtonPressed ΓÇ║ should put the entered numbers into PIN buffer
+  Γ£ö controllers ΓÇ║ processPinpadButtonPressed ΓÇ║ should properly handle pressed Backspace button
+  Γ£ö controllers ΓÇ║ processPinpadButtonPressed ΓÇ║ should properly handle pressed Enter button
+  Γ£ö controllers ΓÇ║ processPinpadButtonPressed ΓÇ║ should call processState() when 6 digits entered
+  Γ£ö controllers ΓÇ║ processPinpadButtonPressed ΓÇ║ should call processState() when 4 digits PIN entered + Enter button pressed
+  Γ£ö controllers ΓÇ║ processPinpadButtonPressed ΓÇ║ should not call processState() when PIN buffer is less than 4
+  Γ£ö controllers ΓÇ║ processPinpadButtonPressed ΓÇ║ should clear PIN Buffer when Esc pressed
+  Γ£ö controllers ΓÇ║ processPinpadButtonPressed ΓÇ║ should put the entered numbers into amount buffer
+  Γ£ö controllers ΓÇ║ processPinpadButtonPressed ΓÇ║ should properly handle pressed Backspace button for state F
+  Γ£ö controllers ΓÇ║ processPinpadButtonPressed ΓÇ║ should properly handle pressed Enter button for state F
+  Γ£ö controllers ΓÇ║ processPinpadButtonPressed ΓÇ║ should not overflow amount buffer
+  Γ£ö controllers ΓÇ║ processPinpadButtonPressed ΓÇ║ should put the entered numbers into buffer C
+  Γ£ö controllers ΓÇ║ processPinpadButtonPressed ΓÇ║ should properly handle pressed Backspace button for state H
+  Γ£ö controllers ΓÇ║ processPinpadButtonPressed ΓÇ║ should put the entered numbers into buffer C when buffer_and_display_params = 001
+  Γ£ö controllers ΓÇ║ processPinpadButtonPressed ΓÇ║ should put the entered numbers into buffer B when buffer_and_display_params = 002
+  Γ£ö controllers ΓÇ║ processPinpadButtonPressed ΓÇ║ should put the entered numbers into buffer B when buffer_and_display_params = 003
+  Γ£ö controllers ΓÇ║ processPinpadButtonPressed ΓÇ║ should not overflow buffer C (32 bytes max)
+  Γ£ö controllers ΓÇ║ processPinpadButtonPressed ΓÇ║ should not overflow buffer B (32 bytes max)
+  Γ£ö controllers ΓÇ║ processPinpadButtonPressed ΓÇ║ should log error when no keyboard entry allowed
+  Γ£ö controllers ΓÇ║ processPinpadButtonPressed ΓÇ║ should log error when unsupported buffer parameter passed
+(node:13508) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+  Γ£ö controllers ΓÇ║ processTransactionRequestState ΓÇ║ should properly fill transaction request data when send_operation_code is enabled
+  Γ£ö controllers ΓÇ║ processTransactionRequestState ΓÇ║ should properly fill transaction request data when send_operation_code is disabled
+  Γ£ö controllers ΓÇ║ processTransactionRequestState ΓÇ║ should properly fill transaction request data when send_track2 is enabled
+  Γ£ö controllers ΓÇ║ processTransactionRequestState ΓÇ║ should properly fill transaction request data when send_track2 is disabled
+  Γ£ö controllers ΓÇ║ processTransactionRequestState ΓÇ║ should properly fill transaction request data when send_amount_data is enabled
+  Γ£ö controllers ΓÇ║ processTransactionRequestState ΓÇ║ should properly fill transaction request data when send_amount_data is disabled
+  Γ£ö controllers ΓÇ║ processTransactionRequestState ΓÇ║ should properly fill transaction request data when send_pin_buffer is disabled (Standard format)
+  Γ£ö controllers ΓÇ║ processTransactionRequestState ΓÇ║ should properly fill transaction request data when send_pin_buffer is enabled (Standard format)
+  Γ£ö controllers ΓÇ║ processTransactionRequestState ΓÇ║ should properly fill transaction request data when send_pin_buffer is disabled (Extended format)
+  Γ£ö controllers ΓÇ║ processTransactionRequestState ΓÇ║ should properly fill transaction request data when send_pin_buffer is enabled (Extended format)
+  Γ£ö controllers ΓÇ║ processTransactionRequestState ΓÇ║ should properly fill transaction request data when send_buffer_B_buffer_C is 000
+  Γ£ö controllers ΓÇ║ processTransactionRequestState ΓÇ║ should properly fill transaction request data when send_buffer_B_buffer_C is 001
+  Γ£ö controllers ΓÇ║ processTransactionRequestState ΓÇ║ should properly fill transaction request data when send_buffer_B_buffer_C is 002
+  Γ£ö controllers ΓÇ║ processTransactionRequestState ΓÇ║ should properly fill transaction request data when send_buffer_B_buffer_C is 003
+  Γ£ö controllers ΓÇ║ processTransactionRequestState ΓÇ║ should create Unsolicited Transaction Request message object
+  Γ£ö controllers ΓÇ║ processTransactionRequestState ΓÇ║ should process interactive transaction and store pressed button in buffer B
+
+  Uncaught exception in tests\services\cards.js
+
+  tests\services\cards.js:60
+
+   59:                                                         
+   60: test('should resolve 3589 as JSB Payment scheme', t => {
+   61:   t.is(s.getPaymentScheme('3590'), undefined);          
+
+  Error: Duplicate test title: should resolve 3589 as JSB Payment scheme
+
+  ΓÇ║ Object.<anonymous> (tests/services/cards.js:60:1)
+  ΓÇ║ loader (node_modules/babel-register/lib/node.js:144:5)
+  ΓÇ║ Object.require.extensions.<computed> [as .js] (node_modules/babel-register/lib/node.js:154:7)
+
+  Γ£ÿ tests\services\cards.js exited with a non-zero exit code: 1
+  ΓöÇ
+
+  `--fail-fast` is on. 4 test files were skipped.
+
+  147 tests passed
+  1 uncaught exception

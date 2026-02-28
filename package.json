@@ -1,0 +1,86 @@
+{
+  "name": "electron-atm",
+  "productName": "Electron ATM",
+  "version": "1.4.3",
+  "description": "A simple APTRA Advance NDC ATM emulator",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron main.js",
+    "test": "eslint tests/** src/services/** src/controllers/** && nyc --reporter=html --reporter=lcov ava --serial",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "win32": "electron-builder --win",
+    "linux": "electron-builder --linux"
+  },
+  "repository": "https://github.com/timgabets/electron-atm",
+  "keywords": [
+    "Electron",
+    "ATM"
+  ],
+  "ava": {
+    "files": [
+      "tests/**/*.js"
+    ],
+    "concurrency": 5,
+    "failFast": true,
+    "failWithoutAssertions": false,
+    "require": [
+      "@babel/register"
+    ]
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ]
+  },
+  "author": {
+    "name": "Tim Gabets",
+    "email": "tim@gabets.ru",
+    "url": "http://gabets.ru/"
+  },
+  "license": "LGPL-2.1",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "ava": "^7.0.0",
+    "eslint": "^10.0.2",
+    "eslint-plugin-import": "^2.32.0",
+    "globals": "^17.3.0",
+    "jsdom": "^11.5.1",
+    "nyc": "^18.0.0",
+    "sinon": "^21.0.1"
+  },
+  "dependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.0",
+    "@babel/preset-react": "^7.28.5",
+    "@babel/register": "^7.28.6",
+    "atm-cursor": "^0.1.1",
+    "atm-fits": "^0.2.0",
+    "atm-hardware": "^0.2.3",
+    "atm-logging": "^0.2.0",
+    "atm-opcode-buffer": "^1.0.1",
+    "atm-screens": "^0.1.1",
+    "atm-screentext": "^0.1.0",
+    "atm-state-levels": "^1.0.6",
+    "atm-states": "^0.7.0",
+    "atm-timestamp": "^1.1.0",
+    "atm-trace": "^0.3.2",
+    "bootstrap": "^5.3.8",
+    "electron": "^40.6.1",
+    "electron-builder": "^26.8.1",
+    "electron-settings": "^4.0.4",
+    "jquery": "^4.0.0",
+    "jquery-validation": "^1.22.1",
+    "mousetrap": "^1.6.1",
+    "ndc-parser": "^0.2.0",
+    "node-cardcrypto": "^1.0.2",
+    "pinblock": "^0.2.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "vis-network": "^10.0.2"
+  },
+  "build": {
+    "appId": "com.electron-atm"
+  }
+}

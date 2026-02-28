@@ -1,0 +1,48 @@
+import globals from "globals";
+import js from "@eslint/js";
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const importPlugin = require("eslint-plugin-import");
+
+export default [
+  js.configs.recommended,
+  {
+    plugins: {
+      import: importPlugin,
+    },
+    languageOptions: {
+      ecmaVersion: 2018,
+      sourceType: "module",
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        ...globals.jquery
+      }
+    },
+    rules: {
+      "quotes": [1, "single"],
+      "no-console": 1,
+      "no-debugger": 1,
+      "no-var": 1,
+      "semi": [1, "always"],
+      "no-trailing-spaces": 0,
+      "eol-last": 0,
+      "no-unused-vars": 0,
+      "no-underscore-dangle": 0,
+      "no-alert": 0,
+      "no-lone-blocks": 0,
+      "indent": ["warn", 2],
+      "eqeqeq": 2,
+      "no-implicit-globals": 2,
+      "radix": 2,
+      "strict": 2,
+      "brace-style": 1,
+      "comma-style": 1,
+      "key-spacing": 2,
+      "linebreak-style": 1,
+      "space-infix-ops": 1,
+      "arrow-spacing": 1,
+      "switch-colon-spacing": 1,
+    }
+  }
+];
