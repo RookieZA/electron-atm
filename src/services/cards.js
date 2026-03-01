@@ -22,39 +22,39 @@ class CardsService {
       return 'VISA';
 
     switch (cardnumber.substr(0, 2)) {
-      case '34':
-        return 'AMEX';
+    case '34':
+      return 'AMEX';
 
-      case '35':
-        // 3528-3589
-        if (cardnumber.substr(2, 2) >= '28' && cardnumber.substr(2, 2) <= '89')
-          return 'JCB';
-        break;
+    case '35':
+      // 3528-3589
+      if (cardnumber.substr(2, 2) >= '28' && cardnumber.substr(2, 2) <= '89')
+        return 'JCB';
+      break;
 
-      case '37':
-        return 'AMEX';
+    case '37':
+      return 'AMEX';
 
-      case '50':
-        return 'Maestro';
+    case '50':
+      return 'Maestro';
 
-      case '51':
-      case '52':
-      case '53':
-      case '54':
-      case '55':
-        return 'Mastercard';
+    case '51':
+    case '52':
+    case '53':
+    case '54':
+    case '55':
+      return 'Mastercard';
 
-      case '56':
-      case '57':
-      case '58':
-        return 'Maestro';
+    case '56':
+    case '57':
+    case '58':
+      return 'Maestro';
 
-      case '62':
-        return 'CUP';
+    case '62':
+      return 'CUP';
 
-      case '64':
-      case '65':
-        return 'Discover';
+    case '64':
+    case '65':
+      return 'Discover';
     }
   }
 

@@ -1,0 +1,22 @@
+{
+    "name": "electron-atm-v2",
+    "version": "2.0.0",
+    "private": true,
+    "description": "Modern rewrite of the Electron ATM Emulator",
+    "scripts": {
+        "build": "npm run build --workspaces",
+        "start": "npm start --workspace=@atm/desktop"
+    },
+    "workspaces": [
+        "packages/*"
+    ],
+    "engines": {
+        "node": ">=20.0.0"
+    },
+    "devDependencies": {
+        "typescript": "^5.7.2",
+        "tsx": "^4.19.2",
+        "vitest": "^2.1.2",
+        "@playwright/test": "^1.48.0"
+    }
+}

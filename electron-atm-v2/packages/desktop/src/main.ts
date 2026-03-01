@@ -137,36 +137,68 @@ ipcMain.handle('system:selectDirectory', async () => {
     return result.filePaths[0];
 });
 
-ipcMain.handle('config:load', async (): Promise<AtmConfig | null> => {
+ipcMain.handle('config:load', async (): Promise<AtmConfig[]> => {
     try {
         if (fs.existsSync(CONFIG_FILE_PATH)) {
             const data = fs.readFileSync(CONFIG_FILE_PATH, 'utf-8');
-            return JSON.parse(data) as AtmConfig;
+            const parsed = JSON.parse(data);
+            if (Array.isArray(parsed)) {
+                return parsed as AtmConfig[];
+            } else if (parsed && typeof parsed === 'object') {
+                // Migration from old single config
+                return [{ ...parsed, id: parsed.id || 'default' }] as AtmConfig[];
+            }
         }
     } catch (error) {
         console.error('Failed to load config:', error);
     }
-    return null;
+    return [];
 });
 
 ipcMain.handle('config:save', async (_event, config: AtmConfig) => {
     try {
-        fs.writeFileSync(CONFIG_FILE_PATH, JSON.stringify(config, null, 2));
+        let profiles: AtmConfig[] = [];
+        if (fs.existsSync(CONFIG_FILE_PATH)) {
+            const data = fs.readFileSync(CONFIG_FILE_PATH, 'utf-8');
+            const parsed = JSON.parse(data);
+            profiles = Array.isArray(parsed) ? parsed : [{ ...parsed, id: parsed.id || 'default' }];
+        }
+
+        const existingIdx = profiles.findIndex(p => p.id === config.id);
+        if (existingIdx >= 0) {
+            profiles[existingIdx] = config;
+        } else {
+            profiles.push(config);
+        }
+
+        fs.writeFileSync(CONFIG_FILE_PATH, JSON.stringify(profiles, null, 2));
     } catch (error) {
         console.error('Failed to save config:', error);
         throw error;
     }
 });
 
-// Host Connection Lifecycle
-ipcMain.handle('host:connect', async () => {
+ipcMain.handle('config:delete', async (_event, id: string) => {
     try {
-        if (!fs.existsSync(CONFIG_FILE_PATH)) {
-            throw new Error('No physical configuration found. Please run User Setup.');
-        }
+        if (!fs.existsSync(CONFIG_FILE_PATH)) return;
+        const data = fs.readFileSync(CONFIG_FILE_PATH, 'utf-8');
+        const parsed = JSON.parse(data);
+        const profiles: AtmConfig[] = Array.isArray(parsed) ? parsed : [{ ...parsed, id: parsed.id || 'default' }];
 
-        const configData = fs.readFileSync(CONFIG_FILE_PATH, 'utf-8');
-        const config: AtmConfig = JSON.parse(configData);
+        const updated = profiles.filter(p => p.id !== id);
+        fs.writeFileSync(CONFIG_FILE_PATH, JSON.stringify(updated, null, 2));
+    } catch (error) {
+        console.error('Failed to delete config:', error);
+        throw error;
+    }
+});
+
+// Host Connection Lifecycle
+ipcMain.handle('host:connect', async (_event, config: AtmConfig) => {
+    try {
+        if (!config || !config.hostAddress) {
+            throw new Error('Valid configuration required to connect.');
+        }
 
         if (!hostConnection) {
             hostConnection = new TcpHostConnection();

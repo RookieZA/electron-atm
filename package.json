@@ -41,12 +41,12 @@
   },
   "license": "LGPL-2.1",
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
+    "@eslint/js": "^9.39.3",
     "ava": "^7.0.0",
-    "eslint": "^10.0.2",
+    "eslint": "^9.39.3",
     "eslint-plugin-import": "^2.32.0",
     "globals": "^17.3.0",
-    "jsdom": "^11.5.1",
+    "jsdom": "^28.1.0",
     "nyc": "^18.0.0",
     "sinon": "^21.0.1"
   },

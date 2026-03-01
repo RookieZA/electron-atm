@@ -3,6 +3,7 @@ export type IpcChannel =
     | 'system:selectDirectory'
     | 'config:load'
     | 'config:save'
+    | 'config:delete'
     | 'atm:insertCard'
     | 'atm:pressKey'
     | 'atm:pressFdk'
@@ -18,6 +19,7 @@ export type IpcChannel =
     | 'host:disconnect';
 
 export interface AtmConfig {
+    id: string;
     hostAddress: string;
     tcpPort: number;
     luno: string;
@@ -34,8 +36,9 @@ export interface IAtmBridge {
     selectDirectory: () => Promise<string | null>;
 
     // Configuration
-    loadConfig: () => Promise<AtmConfig | null>;
+    loadConfig: () => Promise<AtmConfig[]>;
     saveConfig: (config: AtmConfig) => Promise<void>;
+    deleteConfig: (id: string) => Promise<void>;
 
     // ATM Hardware Actions
     insertCard: (cardData: string) => Promise<void>;
@@ -49,7 +52,7 @@ export interface IAtmBridge {
     resetCounters: () => Promise<void>;
 
     // Host Actions (For Simulation Purposes)
-    connectToHost: () => Promise<void>;
+    connectToHost: (config: AtmConfig) => Promise<void>;
     disconnectFromHost: () => Promise<void>;
 
     onStateChange: (callback: (state: string, context: any) => void) => void;

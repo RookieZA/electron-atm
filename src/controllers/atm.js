@@ -34,16 +34,16 @@ class ATM {
 
   getBuffer(type) {
     switch (type) {
-      case 'pin':
-        return this.PIN_buffer;
-      case 'B':
-        return this.buffer_B;
-      case 'C':
-        return this.buffer_C;
-      case 'opcode':
-        return this.opcode.getBuffer();
-      case 'amount':
-        return this.amount_buffer;
+    case 'pin':
+      return this.PIN_buffer;
+    case 'B':
+      return this.buffer_B;
+    case 'C':
+      return this.buffer_C;
+    case 'opcode':
+      return this.opcode.getBuffer();
+    case 'amount':
+      return this.amount_buffer;
     }
   }
 
@@ -104,29 +104,29 @@ class ATM {
       reply.terminal_command = command_code;
 
     switch (command_code) {
-      case 'Send Configuration Information':
-        reply.config_id = this.getConfigID();
-        reply.hardware_fitness = this.hardware.getHardwareFitness();
-        reply.hardware_configuration = '157F000901020483000001B1000000010202047F7F00';
-        reply.supplies_status = this.hardware.getSuppliesStatus();
-        reply.sensor_status = '000000000000';
-        reply.release_number = this.hardware.getReleaseNumber();
-        reply.ndc_software_id = this.hardware.getHarwareID();
-        break;
+    case 'Send Configuration Information':
+      reply.config_id = this.getConfigID();
+      reply.hardware_fitness = this.hardware.getHardwareFitness();
+      reply.hardware_configuration = '157F000901020483000001B1000000010202047F7F00';
+      reply.supplies_status = this.hardware.getSuppliesStatus();
+      reply.sensor_status = '000000000000';
+      reply.release_number = this.hardware.getReleaseNumber();
+      reply.ndc_software_id = this.hardware.getHarwareID();
+      break;
 
-      case 'Send Configuration ID':
-        reply.config_id = this.getConfigID();
-        break;
+    case 'Send Configuration ID':
+      reply.config_id = this.getConfigID();
+      break;
 
-      case 'Send Supply Counters':
-        {
-          let counters = this.getSupplyCounters();
-          for (let c in counters) reply[c] = counters[c];
-        }
-        break;
+    case 'Send Supply Counters':
+      {
+        let counters = this.getSupplyCounters();
+        for (let c in counters) reply[c] = counters[c];
+      }
+      break;
 
-      default:
-        break;
+    default:
+      break;
     }
 
     return reply;
@@ -143,24 +143,24 @@ class ATM {
     reply.message_subclass = 'Status';
 
     switch (status) {
-      case 'Ready':
-      case 'Command Reject':
-      case 'Specific Command Reject':
+    case 'Ready':
+    case 'Command Reject':
+    case 'Specific Command Reject':
+      reply.status_descriptor = status;
+      break;
+
+    case 'Terminal State':
+      {
         reply.status_descriptor = status;
-        break;
+        let data = this.getTerminalStateReply(command_code);
 
-      case 'Terminal State':
-        {
-          reply.status_descriptor = status;
-          let data = this.getTerminalStateReply(command_code);
+        for (let c in data) reply[c] = data[c];
+      }
+      break;
 
-          for (let c in data) reply[c] = data[c];
-        }
-        break;
-
-      default:
-        this.log.error('atm.replySolicitedStatus(): unknown status ' + status);
-        reply.status_descriptor = 'Command Reject';
+    default:
+      this.log.error('atm.replySolicitedStatus(): unknown status ' + status);
+      reply.status_descriptor = 'Command Reject';
     }
     return reply;
   }
@@ -172,26 +172,26 @@ class ATM {
    */
   processTerminalCommand(data) {
     switch (data.command_code) {
-      case 'Go in-service':
-        this.setStatus('In-Service');
-        this.processState('000');
-        this.initBuffers();
-        this.activeFDKs = [];
-        break;
-      case 'Go out-of-service':
-        this.setStatus('Out-Of-Service');
-        this.initBuffers();
-        this.activeFDKs = [];
-        this.card = null;
-        break;
-      case 'Send Configuration Information':
-      case 'Send Configuration ID':
-      case 'Send Supply Counters':
-        return this.replySolicitedStatus('Terminal State', data.command_code);
+    case 'Go in-service':
+      this.setStatus('In-Service');
+      this.processState('000');
+      this.initBuffers();
+      this.activeFDKs = [];
+      break;
+    case 'Go out-of-service':
+      this.setStatus('Out-Of-Service');
+      this.initBuffers();
+      this.activeFDKs = [];
+      this.card = null;
+      break;
+    case 'Send Configuration Information':
+    case 'Send Configuration ID':
+    case 'Send Supply Counters':
+      return this.replySolicitedStatus('Terminal State', data.command_code);
 
-      default:
-        this.log.error('atm.processTerminalCommand(): unknown command code: ' + data.command_code);
-        return this.replySolicitedStatus('Command Reject');
+    default:
+      this.log.error('atm.processTerminalCommand(): unknown command code: ' + data.command_code);
+      return this.replySolicitedStatus('Command Reject');
     }
     return this.replySolicitedStatus('Ready');
   }
@@ -203,36 +203,36 @@ class ATM {
    */
   processCustomizationCommand(data) {
     switch (data.message_identifier) {
-      case 'Screen Data load':
-        if (this.screens.add(data.screens))
-          return this.replySolicitedStatus('Ready');
-        else
-          return this.replySolicitedStatus('Command Reject');
-
-      case 'State Tables load':
-        if (this.states.add(data.states))
-          return this.replySolicitedStatus('Ready');
-        else
-          return this.replySolicitedStatus('Command Reject');
-
-      case 'FIT Data load':
-        if (this.FITs.add(data.FITs))
-          return this.replySolicitedStatus('Ready');
-        else
-          return this.replySolicitedStatus('Command Reject');
-
-      case 'Configuration ID number load':
-        if (data.config_id) {
-          this.setConfigID(data.config_id);
-          return this.replySolicitedStatus('Ready');
-        } else {
-          this.log.info('ATM.processDataCommand(): no Config ID provided');
-          return this.replySolicitedStatus('Command Reject');
-        }
-
-      default:
-        this.log.error('ATM.processDataCommand(): unknown message identifier: ', data.message_identifier);
+    case 'Screen Data load':
+      if (this.screens.add(data.screens))
+        return this.replySolicitedStatus('Ready');
+      else
         return this.replySolicitedStatus('Command Reject');
+
+    case 'State Tables load':
+      if (this.states.add(data.states))
+        return this.replySolicitedStatus('Ready');
+      else
+        return this.replySolicitedStatus('Command Reject');
+
+    case 'FIT Data load':
+      if (this.FITs.add(data.FITs))
+        return this.replySolicitedStatus('Ready');
+      else
+        return this.replySolicitedStatus('Command Reject');
+
+    case 'Configuration ID number load':
+      if (data.config_id) {
+        this.setConfigID(data.config_id);
+        return this.replySolicitedStatus('Ready');
+      } else {
+        this.log.info('ATM.processDataCommand(): no Config ID provided');
+        return this.replySolicitedStatus('Command Reject');
+      }
+
+    default:
+      this.log.error('ATM.processDataCommand(): unknown message identifier: ', data.message_identifier);
+      return this.replySolicitedStatus('Command Reject');
     }
   }
 
@@ -254,15 +254,15 @@ class ATM {
 
   processExtendedEncKeyInfo(data) {
     switch (data.modifier) {
-      case 'Decipher new comms key with current master key':
-        if (this.crypto.setCommsKey(data.new_key_data, data.new_key_length))
-          return this.replySolicitedStatus('Ready');
-        else
-          return this.replySolicitedStatus('Command Reject');
+    case 'Decipher new comms key with current master key':
+      if (this.crypto.setCommsKey(data.new_key_data, data.new_key_length))
+        return this.replySolicitedStatus('Ready');
+      else
+        return this.replySolicitedStatus('Command Reject');
 
-      default:
-        this.log.error('Unsupported modifier');
-        break;
+    default:
+      this.log.error('Unsupported modifier');
+      break;
     }
 
     return this.replySolicitedStatus('Command Reject');
@@ -275,18 +275,18 @@ class ATM {
    */
   processDataCommand(data) {
     switch (data.message_subclass) {
-      case 'Customization Command':
-        return this.processCustomizationCommand(data);
+    case 'Customization Command':
+      return this.processCustomizationCommand(data);
 
-      case 'Interactive Transaction Response':
-        return this.processInteractiveTransactionResponse(data);
+    case 'Interactive Transaction Response':
+      return this.processInteractiveTransactionResponse(data);
 
-      case 'Extended Encryption Key Information':
-        return this.processExtendedEncKeyInfo(data);
+    case 'Extended Encryption Key Information':
+      return this.processExtendedEncKeyInfo(data);
 
-      default:
-        this.log.info('atm.processDataCommand(): unknown message sublass: ', data.message_subclass);
-        return this.replySolicitedStatus('Command Reject');
+    default:
+      this.log.info('atm.processDataCommand(): unknown message sublass: ', data.message_subclass);
+      return this.replySolicitedStatus('Command Reject');
     }
   }
 
@@ -455,9 +455,9 @@ class ATM {
     this.display.setScreenByNumber(state.get('screen_number'));
     let active_mask = '0';
     [state.get('FDK_A_next_state'),
-    state.get('FDK_B_next_state'),
-    state.get('FDK_C_next_state'),
-    state.get('FDK_D_next_state')].forEach(element => {
+      state.get('FDK_B_next_state'),
+      state.get('FDK_C_next_state'),
+      state.get('FDK_D_next_state')].forEach(element => {
       if (element !== '255')
         active_mask += '1';
       else
@@ -471,18 +471,18 @@ class ATM {
     }
 
     switch (state.get('buffer_and_display_params')[2]) {
-      case '0':
-      case '1':
-        this.buffer_C = '';
-        break;
+    case '0':
+    case '1':
+      this.buffer_C = '';
+      break;
 
-      case '2':
-      case '3':
-        this.buffer_B = '';
-        break;
+    case '2':
+    case '3':
+      this.buffer_B = '';
+      break;
 
-      default:
-        this.log.error('Unsupported Display parameter value: ' + state.get('buffer_and_display_params')[2]);
+    default:
+      this.log.error('Unsupported Display parameter value: ' + state.get('buffer_and_display_params')[2]);
     }
   }
 
@@ -528,39 +528,39 @@ class ATM {
         request.amount_buffer = this.amount_buffer;
 
       switch (state.get('send_pin_buffer')) {
-        case '001':   // Standard format. Send Buffer A
-        case '129':   // Extended format. Send Buffer A
-          request.PIN_buffer = this.crypto.getEncryptedPIN(this.PIN_buffer, this.card.number);
-          break;
-        case '000':   // Standard format. Do not send Buffer A
-        case '128':   // Extended format. Do not send Buffer A
-        default:
-          break;
+      case '001':   // Standard format. Send Buffer A
+      case '129':   // Extended format. Send Buffer A
+        request.PIN_buffer = this.crypto.getEncryptedPIN(this.PIN_buffer, this.card.number);
+        break;
+      case '000':   // Standard format. Do not send Buffer A
+      case '128':   // Extended format. Do not send Buffer A
+      default:
+        break;
       }
 
       switch (state.get('send_buffer_B_buffer_C')) {
-        case '000': // Send no buffers
-          break;
+      case '000': // Send no buffers
+        break;
 
-        case '001': // Send Buffer B
-          request.buffer_B = this.buffer_B;
-          break;
+      case '001': // Send Buffer B
+        request.buffer_B = this.buffer_B;
+        break;
 
-        case '002': // Send Buffer C
-          request.buffer_C = this.buffer_C;
-          break;
+      case '002': // Send Buffer C
+        request.buffer_C = this.buffer_C;
+        break;
 
-        case '003': // Send Buffer B and C
-          request.buffer_B = this.buffer_B;
-          request.buffer_C = this.buffer_C;
-          break;
+      case '003': // Send Buffer B and C
+        request.buffer_B = this.buffer_B;
+        request.buffer_C = this.buffer_C;
+        break;
 
-        default:
-          // TODO: If the extended format is selected in table entry 8, this entry is an Extension state number.
-          if (state.get('send_pin_buffer') in ['128', '129']) {
-            null;
-          }
-          break;
+      default:
+        // TODO: If the extended format is selected in table entry 8, this entry is an Extension state number.
+        if (state.get('send_pin_buffer') in ['128', '129']) {
+          null;
+        }
+        break;
       }
     } else {
       request = this.processInteractiveTransaction(request);
@@ -656,21 +656,21 @@ class ATM {
 
         // Checking which buffer to use
         switch (state.get('buffer_id').substr(1, 1)) {
-          case '1':
-            this.buffer_B = buffer_value;
-            break;
+        case '1':
+          this.buffer_B = buffer_value;
+          break;
 
-          case '2':
-            this.buffer_C = buffer_value;
-            break;
+        case '2':
+          this.buffer_C = buffer_value;
+          break;
 
-          case '3':
-            this.setAmountBuffer(buffer_value);
-            break;
+        case '3':
+          this.setAmountBuffer(buffer_value);
+          break;
 
-          default:
-            this.log.error('Unsupported buffer id value: ' + state.get('buffer_id'));
-            break;
+        default:
+          this.log.error('Unsupported buffer id value: ' + state.get('buffer_id'));
+          break;
         }
       }
 
@@ -764,73 +764,73 @@ class ATM {
       }
 
       switch (state.get('type')) {
-        case 'A':
-          next_state = this.processStateA(state);
-          break;
+      case 'A':
+        next_state = this.processStateA(state);
+        break;
 
-        case 'B':
-          next_state = this.processPINEntryState(state);
-          break;
+      case 'B':
+        next_state = this.processPINEntryState(state);
+        break;
 
-        case 'D':
-          state.get('extension_state') !== '255' ? next_state = this.processStateD(state, this.states.get(state.get('extension_state'))) : next_state = this.processStateD(state);
-          break;
+      case 'D':
+        state.get('extension_state') !== '255' ? next_state = this.processStateD(state, this.states.get(state.get('extension_state'))) : next_state = this.processStateD(state);
+        break;
 
-        case 'E':
-          next_state = this.processFourFDKSelectionState(state);
-          break;
+      case 'E':
+        next_state = this.processFourFDKSelectionState(state);
+        break;
 
-        case 'F':
-          next_state = this.processAmountEntryState(state);
-          break;
+      case 'F':
+        next_state = this.processAmountEntryState(state);
+        break;
 
-        case 'H':
-          next_state = this.processInformationEntryState(state);
-          break;
+      case 'H':
+        next_state = this.processInformationEntryState(state);
+        break;
 
-        case 'I':
-          next_state = this.processTransactionRequestState(state);
-          break;
+      case 'I':
+        next_state = this.processTransactionRequestState(state);
+        break;
 
-        case 'J':
-          next_state = this.processCloseState(state);
-          break;
+      case 'J':
+        next_state = this.processCloseState(state);
+        break;
 
-        case 'K':
-          next_state = this.processStateK(state);
-          break;
+      case 'K':
+        next_state = this.processStateK(state);
+        break;
 
-        case 'X':
-          (state.get('extension_state') !== '255' && state.get('extension_state') !== '000') ? next_state = this.processStateX(state, this.states.get(state.get('extension_state'))) : next_state = this.processStateX(state);
-          break;
+      case 'X':
+        (state.get('extension_state') !== '255' && state.get('extension_state') !== '000') ? next_state = this.processStateX(state, this.states.get(state.get('extension_state'))) : next_state = this.processStateX(state);
+        break;
 
-        case 'Y':
-          (state.get('extension_state') !== '255' && state.get('extension_state') !== '000') ? next_state = this.processStateY(state, this.states.get(state.get('extension_state'))) : next_state = this.processStateY(state);
-          break;
+      case 'Y':
+        (state.get('extension_state') !== '255' && state.get('extension_state') !== '000') ? next_state = this.processStateY(state, this.states.get(state.get('extension_state'))) : next_state = this.processStateY(state);
+        break;
 
-        case 'W':
-          next_state = this.processStateW(state);
-          break;
+      case 'W':
+        next_state = this.processStateW(state);
+        break;
 
-        case '+':
-          next_state = this.processStateBeginICCInit(state);
-          break;
+      case '+':
+        next_state = this.processStateBeginICCInit(state);
+        break;
 
-        case '/':
-          next_state = this.processStateCompleteICCAppInit(state);
-          break;
+      case '/':
+        next_state = this.processStateCompleteICCAppInit(state);
+        break;
 
-        case ';':
-          next_state = this.processICCReinit(state);
-          break;
+      case ';':
+        next_state = this.processICCReinit(state);
+        break;
 
-        case '?':
-          next_state = this.processSetICCDataState(state);
-          break;
+      case '?':
+        next_state = this.processSetICCDataState(state);
+        break;
 
-        default:
-          this.log.error('atm.processState(): unsupported state type ' + state.get('type'));
-          next_state = null;
+      default:
+        this.log.error('atm.processState(): unsupported state type ' + state.get('type'));
+        next_state = null;
       }
 
       if (next_state)
@@ -916,10 +916,10 @@ class ATM {
     this.status = status;
 
     switch (status) {
-      case 'Offline':
-      case 'Out-Of-Service':
-        this.display.setScreenByNumber('001');
-        break;
+    case 'Offline':
+    case 'Out-Of-Service':
+      this.display.setScreenByNumber('001');
+      break;
     }
   }
 
@@ -930,21 +930,21 @@ class ATM {
    */
   processHostMessage(data) {
     switch (data.message_class) {
-      case 'Terminal Command':
-        return this.processTerminalCommand(data);
+    case 'Terminal Command':
+      return this.processTerminalCommand(data);
 
-      case 'Data Command':
-        return this.processDataCommand(data);
+    case 'Data Command':
+      return this.processDataCommand(data);
 
-      case 'Transaction Reply Command':
-        return this.processTransactionReply(data);
+    case 'Transaction Reply Command':
+      return this.processTransactionReply(data);
 
-      case 'EMV Configuration':
-        return this.replySolicitedStatus('Ready');
+    case 'EMV Configuration':
+      return this.replySolicitedStatus('Ready');
 
-      default:
-        this.log.info('ATM.processHostMessage(): unknown message class: ' + data.message_class);
-        break;
+    default:
+      this.log.info('ATM.processHostMessage(): unknown message class: ' + data.message_class);
+      break;
     }
     return false;
   }
@@ -957,162 +957,162 @@ class ATM {
   processFDKButtonPressed(button) {
     // log.info(button + ' button pressed');
     switch (this.current_state.get('type')) {
-      case 'B':
-        if (button === 'A' && this.PIN_buffer.length >= 4)
-          this.processState(this.current_state.get('number'));
-        break;
+    case 'B':
+      if (button === 'A' && this.PIN_buffer.length >= 4)
+        this.processState(this.current_state.get('number'));
+      break;
 
-      case 'H':
-        {
-          let active_mask = '0';
-          [this.current_state.get('FDK_A_next_state'),
+    case 'H':
+      {
+        let active_mask = '0';
+        [this.current_state.get('FDK_A_next_state'),
           this.current_state.get('FDK_B_next_state'),
           this.current_state.get('FDK_C_next_state'),
           this.current_state.get('FDK_D_next_state')].forEach(element => {
-            if (element !== '255')
-              active_mask += '1';
-            else
-              active_mask += '0';
-          });
-          this.setFDKsActiveMask(active_mask);
+          if (element !== '255')
+            active_mask += '1';
+          else
+            active_mask += '0';
+        });
+        this.setFDKsActiveMask(active_mask);
 
-          if (this.isFDKButtonActive(button)) {
-            this.buttons_pressed.push(button);
-            this.processState(this.current_state.get('number'));
-          }
+        if (this.isFDKButtonActive(button)) {
+          this.buttons_pressed.push(button);
+          this.processState(this.current_state.get('number'));
         }
-        break;
+      }
+      break;
 
-      default:
-        // No special processing required
-        this.buttons_pressed.push(button);
-        this.processState(this.current_state.get('number'));
-        break;
+    default:
+      // No special processing required
+      this.buttons_pressed.push(button);
+      this.processState(this.current_state.get('number'));
+      break;
     }
   }
 
   processBackspaceButtonPressed() {
     switch (this.current_state.get('type')) {
-      case 'B':
-        this.PIN_buffer = this.PIN_buffer.slice(0, -1);
-        this.display.insertText(this.PIN_buffer, '*');
-        break;
-      case 'F':
-        this.amount_buffer = '0' + this.amount_buffer.substr(0, this.amount_buffer.length - 1);
-        this.display.insertText(this.amount_buffer);
-        break;
-      case 'H':
-        {
-          let buffer;
-          let key;
+    case 'B':
+      this.PIN_buffer = this.PIN_buffer.slice(0, -1);
+      this.display.insertText(this.PIN_buffer, '*');
+      break;
+    case 'F':
+      this.amount_buffer = '0' + this.amount_buffer.substr(0, this.amount_buffer.length - 1);
+      this.display.insertText(this.amount_buffer);
+      break;
+    case 'H':
+      {
+        let buffer;
+        let key;
 
-          switch (this.current_state.get('buffer_and_display_params')[2]) {
-            case '0': // Display 'X' for each numeric key pressed. Store data in general-purpose Buffer C
-              this.buffer_C = this.buffer_C.substr(0, this.buffer_C.length - 1);
-              key = 'X';
-              buffer = this.buffer_C;
-              break;
-            case '1': // Display data as keyed in. Store data in general-purpose Buffer C
-              this.buffer_C = this.buffer_C.substr(0, this.buffer_C.length - 1);
-              buffer = this.buffer_C;
-              break;
-            case '2': // Display 'X' for each numeric key pressed. Store data in general-purpose Buffer B
-              this.buffer_B = this.buffer_B.substr(0, this.buffer_B.length - 1);
-              buffer = this.buffer_B;
-              key = 'X';
-              break;
-            case '3': // Display data as keyed in. Store data in general-purpose Buffer B
-              this.buffer_B = this.buffer_B.substr(0, this.buffer_B.length - 1);
-              buffer = this.buffer_B;
-              break;
-          }
-          this.display.insertText(buffer, key);
+        switch (this.current_state.get('buffer_and_display_params')[2]) {
+        case '0': // Display 'X' for each numeric key pressed. Store data in general-purpose Buffer C
+          this.buffer_C = this.buffer_C.substr(0, this.buffer_C.length - 1);
+          key = 'X';
+          buffer = this.buffer_C;
+          break;
+        case '1': // Display data as keyed in. Store data in general-purpose Buffer C
+          this.buffer_C = this.buffer_C.substr(0, this.buffer_C.length - 1);
+          buffer = this.buffer_C;
+          break;
+        case '2': // Display 'X' for each numeric key pressed. Store data in general-purpose Buffer B
+          this.buffer_B = this.buffer_B.substr(0, this.buffer_B.length - 1);
+          buffer = this.buffer_B;
+          key = 'X';
+          break;
+        case '3': // Display data as keyed in. Store data in general-purpose Buffer B
+          this.buffer_B = this.buffer_B.substr(0, this.buffer_B.length - 1);
+          buffer = this.buffer_B;
+          break;
         }
-        break;
-      default:
-        break;
+        this.display.insertText(buffer, key);
+      }
+      break;
+    default:
+      break;
     }
   }
 
   processEnterButtonPressed() {
     switch (this.current_state.get('type')) {
-      case 'B':
-        if (this.PIN_buffer.length >= 4)
-          this.processState(this.current_state.get('number'));
-        this.display.insertText(this.PIN_buffer, '*');
-        break;
-      case 'F':
-        // If the cardholder presses the Enter key, it has the same effect as pressing FDK ‘A’
-        this.buttons_pressed.push('A');
+    case 'B':
+      if (this.PIN_buffer.length >= 4)
         this.processState(this.current_state.get('number'));
-        break;
-      default:
-        break;
+      this.display.insertText(this.PIN_buffer, '*');
+      break;
+    case 'F':
+      // If the cardholder presses the Enter key, it has the same effect as pressing FDK ‘A’
+      this.buttons_pressed.push('A');
+      this.processState(this.current_state.get('number'));
+      break;
+    default:
+      break;
     }
   }
 
   processEscButtonPressed() {
     switch (this.current_state.get('type')) {
-      case 'B':
-        this.PIN_buffer = '';
-        break;
-      default:
-        break;
+    case 'B':
+      this.PIN_buffer = '';
+      break;
+    default:
+      break;
     }
   }
 
   processNumericButtonPressed(button) {
     switch (this.current_state.get('type')) {
-      case 'B':
-        this.PIN_buffer += button;
-        if (this.PIN_buffer.length >= this.FITs.getMaxPINLength(this.card.number) || this.PIN_buffer.length >= 6)
-          this.processState(this.current_state.get('number'));
-        this.display.insertText(this.PIN_buffer, '*');
-        break;
-      case 'F':
-        this.amount_buffer = this.amount_buffer.substr(1) + button;
-        this.display.insertText(this.amount_buffer);
-        break;
-      case 'H':
-        {
-          let key;
-          let buffer;
-          let display_param = this.current_state.get('buffer_and_display_params')[2];
-          switch (display_param) {
-            case '0': // Display 'X' for each numeric key pressed. Store data in general-purpose Buffer C
-            case '1': // Display data as keyed in. Store data in general-purpose Buffer C
-              if (this.buffer_C.length < 32) {
-                this.buffer_C += button;
+    case 'B':
+      this.PIN_buffer += button;
+      if (this.PIN_buffer.length >= this.FITs.getMaxPINLength(this.card.number) || this.PIN_buffer.length >= 6)
+        this.processState(this.current_state.get('number'));
+      this.display.insertText(this.PIN_buffer, '*');
+      break;
+    case 'F':
+      this.amount_buffer = this.amount_buffer.substr(1) + button;
+      this.display.insertText(this.amount_buffer);
+      break;
+    case 'H':
+      {
+        let key;
+        let buffer;
+        let display_param = this.current_state.get('buffer_and_display_params')[2];
+        switch (display_param) {
+        case '0': // Display 'X' for each numeric key pressed. Store data in general-purpose Buffer C
+        case '1': // Display data as keyed in. Store data in general-purpose Buffer C
+          if (this.buffer_C.length < 32) {
+            this.buffer_C += button;
 
-                buffer = this.buffer_C;
-                if (display_param === '0') {
-                  key = 'X';
-                }
-              }
-              break;
-            case '2': // Display 'X' for each numeric key pressed. Store data in general-purpose Buffer B
-            case '3': // Display data as keyed in. Store data in general-purpose Buffer B
-              if (this.buffer_B.length < 32) {
-                this.buffer_B += button;
-
-                buffer = this.buffer_B;
-                if (display_param === '2') {
-                  key = 'X';
-                }
-              }
-              break;
-            default:
-              this.log.error('Unsupported Display parameter value: ' + display_param);
+            buffer = this.buffer_C;
+            if (display_param === '0') {
+              key = 'X';
+            }
           }
+          break;
+        case '2': // Display 'X' for each numeric key pressed. Store data in general-purpose Buffer B
+        case '3': // Display data as keyed in. Store data in general-purpose Buffer B
+          if (this.buffer_B.length < 32) {
+            this.buffer_B += button;
 
-          // console.log(buffer);
-          if (buffer)
-            this.display.insertText(buffer, key);
+            buffer = this.buffer_B;
+            if (display_param === '2') {
+              key = 'X';
+            }
+          }
+          break;
+        default:
+          this.log.error('Unsupported Display parameter value: ' + display_param);
         }
-        break;
-      default:
-        this.log.error('No keyboard entry allowed for state type ' + this.current_state.get('type'));
-        break;
+
+        // console.log(buffer);
+        if (buffer)
+          this.display.insertText(buffer, key);
+      }
+      break;
+    default:
+      this.log.error('No keyboard entry allowed for state type ' + this.current_state.get('type'));
+      break;
     }
   }
 
@@ -1123,17 +1123,17 @@ class ATM {
    */
   processPinpadButtonPressed(button) {
     switch (button) {
-      case 'backspace':
-        this.processBackspaceButtonPressed();
-        break;
-      case 'enter':
-        this.processEnterButtonPressed();
-        break;
-      case 'esc':
-        this.processEscButtonPressed();
-        break;
-      default:
-        this.processNumericButtonPressed(button);
+    case 'backspace':
+      this.processBackspaceButtonPressed();
+      break;
+    case 'enter':
+      this.processEnterButtonPressed();
+      break;
+    case 'esc':
+      this.processEscButtonPressed();
+      break;
+    default:
+      this.processNumericButtonPressed(button);
     }
   }
 

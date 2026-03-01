@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
-import type { IAtmBridge } from './shared/ipc.js';
+import type { IAtmBridge, AtmConfig } from './shared/ipc.js';
 import './index.css';
 
 import { ATMLayout } from './components/atm/ATMLayout.js';
@@ -11,9 +11,16 @@ import { Card, CardContent } from './components/ui/card.js';
 import { Switch } from './components/ui/switch.js';
 import { Label } from './components/ui/label.js';
 import { Loader2, CreditCard, Banknote, AlertCircle } from 'lucide-react';
+import { ProfileSelector } from './components/setup/ProfileSelector.js';
 import { getScreenContent, parseNDCScreen, executeScreenActions } from './lib/screens/ndcScreens.js';
 import { StatusBar } from './components/inspector/StatusBar.js';
-import { InspectorPanel } from './components/inspector/InspectorPanel.js';
+import { NdcLog } from './components/inspector/NdcLog.js';
+import { StatesPanel } from './components/inspector/StatesPanel.js';
+import { ScreensPanel } from './components/inspector/ScreensPanel.js';
+import { FitsPanel } from './components/inspector/FitsPanel.js';
+import { EmvPanel } from './components/inspector/EmvPanel.js';
+import { CardsPanel } from './components/inspector/CardsPanel.js';
+import { HardwarePanel } from './components/inspector/HardwarePanel.js';
 import type { LogEntry } from './components/inspector/NdcLog.js';
 import type { TestCard } from './components/inspector/CardsPanel.js';
 
@@ -42,11 +49,14 @@ const App = () => {
     const [rawNdcMode, setRawNdcMode] = useState(false);
     const [dispenseInfo, setDispenseInfo] = useState<{ cassette?: string; count?: number; authCode?: string } | null>(null);
 
-    // Configuration State — always false on startup so Setup Screen always shows
+    // Configuration State
     const [isConfigured, setIsConfigured] = useState<boolean>(false);
-    const [atmConfig, setAtmConfig] = useState<any>(null);
+    const [profiles, setProfiles] = useState<AtmConfig[]>([]);
+    const [activeProfile, setActiveProfile] = useState<AtmConfig | null>(null);
+    const [isEditingProfile, setIsEditingProfile] = useState<boolean>(false);
 
     // Inspector Panel State
+    const [activeRootTab, setActiveRootTab] = useState<'emulator' | 'states' | 'screens' | 'fits' | 'emv' | 'cards' | 'hardware'>('emulator');
     const [ndcLog, setNdcLog] = useState<LogEntry[]>([]);
     const [testCards, setTestCards] = useState<TestCard[]>(loadCardsFromStorage);
     const [selectedCard, setSelectedCard] = useState<TestCard | undefined>(undefined);
@@ -55,16 +65,13 @@ const App = () => {
         setNdcLog(prev => [...prev.slice(-200), entry]);
     }, []);
 
+    const fetchProfiles = async () => {
+        const loaded = await window.atmAPI.loadConfig();
+        setProfiles(loaded || []);
+    };
+
     useEffect(() => {
-        // Load saved config to pre-fill the Setup Screen fields, but don't skip the screen
-        window.atmAPI.loadConfig().then((config) => {
-            if (config) {
-                setAtmConfig(config);
-                // NOTE: We intentionally do NOT call setIsConfigured(true) here.
-                // The Setup Screen always shows so the user can verify/update their host config
-                // before each session. Clicking "Continue" applies the settings and proceeds.
-            }
-        });
+        fetchProfiles();
 
         window.atmAPI.onStateChange((state, context) => {
             setAtmState(state);
@@ -136,10 +143,44 @@ const App = () => {
     }, []);
 
 
-    const handleConfigComplete = async (config: any) => {
+    const handleConfigComplete = async (config: AtmConfig) => {
         await window.atmAPI.saveConfig(config);
-        setAtmConfig(config);
+        await fetchProfiles();
+        setActiveProfile(config);
+        setIsEditingProfile(false);
         setIsConfigured(true);
+        window.atmAPI.connectToHost(config);
+    };
+
+    const handleConnectProfile = (config: AtmConfig) => {
+        setActiveProfile(config);
+        setIsConfigured(true);
+        window.atmAPI.connectToHost(config);
+    };
+
+    const handleEditProfile = (config: AtmConfig) => {
+        setActiveProfile(config);
+        setIsEditingProfile(true);
+    };
+
+    const handleDeleteProfile = async (id: string) => {
+        await window.atmAPI.deleteConfig(id);
+        await fetchProfiles();
+    };
+
+    const handleNewProfile = () => {
+        setActiveProfile({
+            id: '',
+            hostAddress: '127.0.0.1',
+            tcpPort: 11032,
+            luno: '714',
+            terminalMasterKey: 'B6D55EABAD23BC4FD558F8D619A21C34',
+            communicationsKey: '48C0C91833DEDB9F03CC114DF927091B',
+            imagePath: '/home/tim/share/screens',
+            profileName: 'New ATM Profile',
+            ndcMessageHeader: '\\x00\\x16\\x00\\x00\\x02\\x00'
+        });
+        setIsEditingProfile(true);
     };
 
     const handleFdkPress = (key: string) => {
@@ -392,49 +433,144 @@ const App = () => {
 
     const screenProps = renderScreen();
 
+    // 1. If not configured and editing/new profile, show SetupScreen
+    if (!isConfigured && (isEditingProfile || profiles.length === 0)) {
+        return <SetupScreen
+            initialConfig={activeProfile}
+            onComplete={handleConfigComplete}
+            onCancel={profiles.length > 0 ? () => setIsEditingProfile(false) : undefined}
+        />;
+    }
+
+    // 2. If not configured but we have profiles, show ProfileSelector
     if (!isConfigured) {
-        return <SetupScreen initialConfig={atmConfig} onComplete={handleConfigComplete} />;
+        return (
+            <ProfileSelector
+                profiles={profiles}
+                onConnect={handleConnectProfile}
+                onEdit={handleEditProfile}
+                onNewProfile={handleNewProfile}
+                onDelete={handleDeleteProfile}
+            />
+        );
     }
 
     return (
         <div className="h-screen w-screen bg-slate-950 flex flex-col overflow-hidden">
+            {/* Top Status Bar */}
             <StatusBar state={atmState} context={atmContext} />
-            <div className="flex flex-1 overflow-hidden">
-                <div className="flex flex-col items-center justify-center gap-6 p-6 shrink-0 bg-slate-950">
-                    <div className="transform scale-75 origin-top">
-                        <div className="flex gap-6 items-start">
-                            <ATMLayout
-                                imageFile={screenProps.imageFile}
-                                textRows={screenProps.textRows}
-                                overrideJsx={screenProps.overrideJsx}
-                                imagePath={atmConfig?.imagePath || ''}
-                                activeFDKs={atmContext.activeFDKs || []}
-                                onFdkPress={handleFdkPress}
-                                onKeypadPress={handleKeypadPress}
-                                onInsertCard={handleInsertCard}
-                            />
-                            <div className="pt-8 flex flex-col gap-6">
-                                <ATMKeypad onKeyPress={handleKeypadPress} />
-                                <div className="flex flex-col items-center space-y-3 bg-slate-800 p-4 rounded-2xl border border-slate-700 shadow-xl">
-                                    <Label htmlFor="ndc-mode" className="text-white text-sm tracking-wider">Raw NDC Mode</Label>
-                                    <Switch className="scale-110" id="ndc-mode" checked={rawNdcMode} onCheckedChange={setRawNdcMode} />
+
+            {/* Root Tab Navigation */}
+            <div className="flex border-b border-slate-700 bg-slate-900 shrink-0">
+                {[
+                    { id: 'emulator', label: 'Emulator' },
+                    { id: 'states', label: 'States' },
+                    { id: 'screens', label: 'Screens' },
+                    { id: 'fits', label: 'FITs' },
+                    { id: 'emv', label: 'EMV' },
+                    { id: 'cards', label: 'Cards' },
+                    { id: 'hardware', label: 'Hardware' }
+                ].map(tab => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveRootTab(tab.id as typeof activeRootTab)}
+                        className={`px-6 py-3 text-xs font-bold tracking-widest uppercase transition-colors border-b-2 ${activeRootTab === tab.id
+                            ? 'border-blue-500 text-blue-400 bg-slate-800'
+                            : 'border-transparent text-slate-500 hover:text-slate-300 hover:bg-slate-800/50'
+                            }`}
+                    >
+                        {tab.label}
+                    </button>
+                ))}
+            </div>
+
+            {/* Main Content Area */}
+            <div className="flex-1 overflow-hidden flex flex-col relative">
+
+                {/* Tab Content Panels */}
+                <div className="flex-1 flex overflow-hidden">
+                    {/* EMULATOR TAB */}
+                    {activeRootTab === 'emulator' && (
+                        <div className="flex-1 overflow-y-auto flex flex-col items-center justify-start pt-10 pb-24 bg-slate-950">
+                            <div style={{ zoom: 0.8 }}>
+                                <div className="flex gap-6 items-start">
+                                    <ATMLayout
+                                        imageFile={screenProps.imageFile}
+                                        textRows={screenProps.textRows}
+                                        overrideJsx={screenProps.overrideJsx}
+                                        imagePath={activeProfile?.imagePath || ''}
+                                        activeFDKs={atmContext.activeFDKs || []}
+                                        onFdkPress={handleFdkPress}
+                                        onKeypadPress={handleKeypadPress}
+                                        onInsertCard={handleInsertCard}
+                                    />
+                                    <div className="pt-8 flex flex-col gap-6">
+                                        <ATMKeypad onKeyPress={handleKeypadPress} />
+                                        <div className="flex flex-col items-center space-y-3 bg-slate-800 p-4 rounded-2xl border border-slate-700 shadow-xl">
+                                            <Label htmlFor="ndc-mode" className="text-white text-sm tracking-wider">Raw NDC Mode</Label>
+                                            <Switch className="scale-110" id="ndc-mode" checked={rawNdcMode} onCheckedChange={setRawNdcMode} />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                    )}
+
+                    {/* INSPECTOR TABS */}
+                    {activeRootTab === 'states' && (
+                        <div className="flex-1 overflow-hidden bg-slate-900">
+                            <StatesPanel
+                                stateTables={atmContext.stateTables || {}}
+                                currentState={atmContext.currentStateNumber}
+                                screenData={atmContext.screenData || {}}
+                            />
+                        </div>
+                    )}
+                    {activeRootTab === 'screens' && (
+                        <div className="flex-1 overflow-hidden bg-slate-900">
+                            <ScreensPanel screens={atmContext.screenData || {}} />
+                        </div>
+                    )}
+                    {activeRootTab === 'fits' && (
+                        <div className="flex-1 overflow-hidden bg-slate-900">
+                            <FitsPanel fits={Object.values(atmContext.fitData || {})} />
+                        </div>
+                    )}
+                    {activeRootTab === 'emv' && (
+                        <div className="flex-1 overflow-hidden bg-slate-900">
+                            <EmvPanel emvData={atmContext.emvData || {}} />
+                        </div>
+                    )}
+                    {activeRootTab === 'cards' && (
+                        <div className="flex-1 overflow-hidden bg-slate-900 p-6">
+                            <CardsPanel
+                                cards={testCards}
+                                onAddCard={handleAddCard}
+                                onDeleteCard={handleDeleteCard}
+                                onSelectCard={handleSelectCard}
+                                selectedCardNumber={selectedCard?.number}
+                            />
+                        </div>
+                    )}
+                    {activeRootTab === 'hardware' && (
+                        <div className="flex-1 overflow-hidden bg-slate-900">
+                            <HardwarePanel counters={atmContext.supplyCounters || {}} />
+                        </div>
+                    )}
+                </div>
+
+                {/* Bottom NDC Log Panel (30% fixed height) */}
+                <div className="h-[30vh] shrink-0 flex flex-col border-t border-slate-700 bg-slate-900 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] z-10">
+                    <div className="flex items-center gap-2 px-4 py-2 bg-slate-800 border-b border-slate-700 shrink-0">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+                        <span className="text-[10px] uppercase tracking-widest text-slate-400 font-mono font-bold">NDC Protocol Trace Log</span>
+                        <span className="ml-auto text-[10px] text-slate-500 font-mono">{ndcLog.length} msg(s)</span>
+                    </div>
+                    <div className="flex-1 overflow-hidden">
+                        <NdcLog entries={ndcLog} />
                     </div>
                 </div>
-                <div className="flex-1 overflow-hidden p-4 pl-0">
-                    <InspectorPanel
-                        ndcLog={ndcLog}
-                        atmContext={atmContext}
-                        currentState={atmState}
-                        cards={testCards}
-                        onAddCard={handleAddCard}
-                        onDeleteCard={handleDeleteCard}
-                        onSelectCard={handleSelectCard}
-                        selectedCardNumber={selectedCard?.number}
-                    />
-                </div>
+
             </div>
         </div>
     );

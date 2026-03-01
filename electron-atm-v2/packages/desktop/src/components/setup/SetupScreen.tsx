@@ -6,13 +6,17 @@ import { Label } from '@/components/ui/label.js';
 import { FolderOpen } from 'lucide-react';
 import type { AtmConfig } from '@/shared/ipc.js';
 
+import { v4 as uuidv4 } from 'uuid';
+
 interface SetupScreenProps {
     onComplete: (config: AtmConfig) => void;
+    onCancel?: () => void;
     initialConfig?: AtmConfig | null;
 }
 
-export const SetupScreen: React.FC<SetupScreenProps> = ({ onComplete, initialConfig }) => {
+export const SetupScreen: React.FC<SetupScreenProps> = ({ onComplete, onCancel, initialConfig }) => {
     const [config, setConfig] = useState<AtmConfig>({
+        id: initialConfig?.id || uuidv4(),
         hostAddress: initialConfig?.hostAddress || '127.0.0.1',
         tcpPort: initialConfig?.tcpPort || 11032,
         luno: initialConfig?.luno || '714',
@@ -137,9 +141,16 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({ onComplete, initialCon
                     </p>
                 </div>
 
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8" onClick={handleContinue}>
-                    Continue
-                </Button>
+                <div className="flex gap-4">
+                    <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8" onClick={handleContinue}>
+                        Save & Continue
+                    </Button>
+                    {onCancel && (
+                        <Button variant="outline" className="px-8" onClick={onCancel}>
+                            Cancel
+                        </Button>
+                    )}
+                </div>
             </div>
         </div>
     );

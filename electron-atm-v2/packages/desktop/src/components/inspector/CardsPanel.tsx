@@ -57,11 +57,16 @@ export const CardsPanel = ({ cards, onAddCard, onDeleteCard, onSelectCard, selec
     const scheme = detectScheme(form.number);
 
     const validate = (): boolean => {
-        const errs: FormErrors = {};
+        const errs: FormErrors & { pin?: string; serviceCode?: string; pvv?: string; cvv?: string } = {};
         const digits = form.number.replace(/\s/g, '');
         if (!digits || digits.length < 12) errs.number = 'Please enter at least 12 digits.';
         if (!form.name.trim()) errs.name = 'Name is required.';
         if (form.expiryDate && !/^\d{4}$/.test(form.expiryDate)) errs.expiryDate = 'Format: YYMM';
+        if (form.pin && !/^\d{4}$/.test(form.pin)) errs.pin = 'Must be 4 digits';
+        if (form.serviceCode && !/^\d{3}$/.test(form.serviceCode)) errs.serviceCode = 'Must be 3 digits';
+        if (form.pvv && !/^\d{4}$/.test(form.pvv)) errs.pvv = 'Must be 4 digits';
+        if (form.cvv && !/^\d{3}$/.test(form.cvv)) errs.cvv = 'Must be 3 digits';
+
         setErrors(errs);
         return Object.keys(errs).length === 0;
     };
@@ -80,14 +85,14 @@ export const CardsPanel = ({ cards, onAddCard, onDeleteCard, onSelectCard, selec
         setShowForm(false);
     };
 
-    const FORM_FIELDS: { key: keyof TestCard; label: string; placeholder: string; width?: string }[] = [
-        { key: 'number', label: 'Card Number', placeholder: '4111 1111 1111 1111', width: 'w-44' },
-        { key: 'pin', label: 'PIN', placeholder: '0000', width: 'w-20' },
-        { key: 'expiryDate', label: 'Expiry (YYMM)', placeholder: '2512', width: 'w-24' },
-        { key: 'serviceCode', label: 'Service Code', placeholder: '101', width: 'w-20' },
-        { key: 'pvki', label: 'PVK Index', placeholder: '1', width: 'w-16' },
-        { key: 'pvv', label: 'PVV', placeholder: '0000', width: 'w-20' },
-        { key: 'cvv', label: 'CVV', placeholder: '000', width: 'w-16' },
+    const FORM_FIELDS: { key: keyof TestCard; label: string; placeholder: string; width?: string; maxLength?: number }[] = [
+        { key: 'number', label: 'Card Number', placeholder: '4111111111111111', width: 'w-44', maxLength: 19 },
+        { key: 'pin', label: 'PIN', placeholder: '0000', width: 'w-20', maxLength: 4 },
+        { key: 'expiryDate', label: 'Expiry (YYMM)', placeholder: '2512', width: 'w-24', maxLength: 4 },
+        { key: 'serviceCode', label: 'Service Code', placeholder: '101', width: 'w-20', maxLength: 3 },
+        { key: 'pvki', label: 'PVK Index', placeholder: '1', width: 'w-16', maxLength: 2 },
+        { key: 'pvv', label: 'PVV', placeholder: '0000', width: 'w-20', maxLength: 4 },
+        { key: 'cvv', label: 'CVV', placeholder: '000', width: 'w-16', maxLength: 4 },
         { key: 'discretionaryData', label: 'Discr Data', placeholder: '', width: 'w-28' },
     ];
 
@@ -122,17 +127,20 @@ export const CardsPanel = ({ cards, onAddCard, onDeleteCard, onSelectCard, selec
                                 {errors.name && <p className="text-[10px] text-red-500">{errors.name}</p>}
                             </div>
 
-                            {FORM_FIELDS.map(({ key, label, placeholder, width }) => (
+                            {FORM_FIELDS.map(({ key, label, placeholder, width, maxLength }) => (
                                 <div key={key} className={`flex flex-col gap-0.5 ${width ?? 'w-24'}`}>
                                     <label className="text-[10px] text-slate-500 uppercase tracking-wide">{label}</label>
                                     <input
                                         className={`border rounded px-2 py-1 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-blue-400 ${(errors as any)[key] ? 'border-red-400 focus:ring-red-400' : 'border-slate-300'}`}
                                         placeholder={placeholder}
                                         value={(form as any)[key]}
+                                        maxLength={maxLength}
                                         onChange={e => {
                                             let val = e.target.value;
-                                            // Auto-format card number as user types
-                                            if (key === 'number') val = val.replace(/[^0-9 ]/g, '').replace(/(.{4})/g, '$1 ').trim().slice(0, 24);
+                                            // Only strip non-digits for number-based fields, don't inject spaces on change
+                                            if (key !== 'name' && key !== 'discretionaryData') {
+                                                val = val.replace(/[^0-9]/g, '');
+                                            }
                                             setForm(f => ({ ...f, [key]: val }));
                                         }}
                                     />

@@ -1,3 +1,130 @@
+March 2026
+  2.0.0 Full ground-up rewrite of the Electron ATM Emulator (V2)
+
+  ─── ARCHITECTURE ──────────────────────────────────────────────────────────
+  * Converted project to an npm workspaces monorepo under `electron-atm-v2/`
+  * Project split into three independently buildable packages:
+      @atm/protocol  — pure NDC protocol layer (parser, builder, crypto, types)
+      @atm/core      — ATM state machine and hardware simulation layer
+      @atm/desktop   — Electron + React front-end application
+  * Strict dependency hierarchy enforced: protocol → core → desktop
+  * Requires Node.js >= 20.0.0
+  * All packages authored as ES Modules (`"type": "module"`)
+  * Project-wide base TypeScript configuration via `tsconfig.base.json`
+
+  ─── LANGUAGE & TYPE SAFETY ────────────────────────────────────────────────
+  * Migrated entire codebase from JavaScript (ES6) to TypeScript 5.x
+  * All public APIs and internal types fully typed; no implicit `any`
+  * Shared type definitions centralised in `@atm/protocol/src/types/`
+  * Eliminated all legacy CommonJS `require()` calls; ESM `import`/`export`
+    used throughout
+  * Strict null checks and strict mode enabled across all packages
+
+  ─── @atm/protocol PACKAGE ─────────────────────────────────────────────────
+  * NDC message parser extracted from the monolithic codebase and rewritten
+    in strict TypeScript with fully typed return values
+  * NDC message builder extracted and rewritten; produces typed message frames
+  * Cryptographic routines (PIN-block, DES/3DES, key management) ported to
+    TypeScript and placed in `src/crypto/`
+  * Removed runtime dependency on `ndc-parser`, `atm-screentext`,
+    `atm-cursor`, `pinblock`, `atm-opcode-buffer`, `atm-fits`,
+    `atm-screens`, `atm-states`, and `atm-hardware` npm modules — all
+    functionality is now owned and maintained within the monorepo
+  * Package exports a clean public API via `src/index.ts`
+
+  ─── @atm/core PACKAGE ─────────────────────────────────────────────────────
+  * ATM state machine rebuilt using XState v5 (`xstate@^5.28.0`)
+      - Fully declarative state chart defined in `atmMachine.ts`
+      - All state-type processing logic (states A–Y) ported to
+        `stateProcessor.ts`; each state handler is an isolated, testable
+        function
+  * Hardware abstraction layer introduced:
+      - `interfaces.ts` defines `IHardware` contract for peripherals
+      - `mockHardware.ts` provides a fully simulated hardware implementation
+        that covers card reader, receipt printer, journal printer, and cash
+        dispenser for emulator operation without real hardware
+      - `supplyCounters.ts` tracks cassette levels, reject counts, and
+        dispense operations with full NDC Supply Counter message support
+  * Host communication layer extracted to `src/host/` with dedicated TCP
+    socket management, connection lifecycle handling, and NDC message framing
+  * Package exports a typed public API via `src/index.ts`
+  * Unit tests written with Vitest (`vitest@^2.1.2`)
+
+  ─── @atm/desktop PACKAGE ──────────────────────────────────────────────────
+  * Electron upgraded to v40 (`electron@^40.6.1`)
+  * Renderer process rebuilt as a React 19 Single-Page Application
+  * Build tooling replaced: Vite 7 (`vite@^7.3.1`) replaces the legacy
+    Electron-builder/Webpack pipeline; `@vitejs/plugin-react` used for JSX
+    transform
+  * Tailwind CSS v3 (`tailwindcss@^3.4.19`) + PostCSS + Autoprefixer replace
+    Bootstrap for styling
+  * shadcn/ui component primitives integrated via Radix UI:
+      - `@radix-ui/react-dialog`   — modal dialogs
+      - `@radix-ui/react-label`    — accessible label elements
+      - `@radix-ui/react-slot`     — polymorphic component composition
+      - `@radix-ui/react-switch`   — toggle switch controls
+  * `class-variance-authority`, `clsx`, and `tailwind-merge` used for
+    class composition and conditional styling
+  * `lucide-react` icon library replaces legacy Font Awesome usage
+  * `uuid` library used for unique card and session ID generation
+  * XState Store (`@xstate/store@^3.16.0`) used for lightweight UI state
+    management alongside the core XState machine
+  * Interactive state-flow graph rendered with `@xyflow/react@^12.10.1`
+
+  ─── USER INTERFACE ────────────────────────────────────────────────────────
+  * New top-level tab navigation with dedicated tabs:
+      Emulator | States | Screens | FITs | EMV | Cards | Hardware
+  * Emulator tab:
+      - ATMLayout component renders the persistent ATM screen with realistic
+        bezel framing and dynamic screen content driven by the state machine
+      - ATMKeypad component provides FDK buttons, numeric PIN pad, Enter,
+        Cancel, and Clear keys; keyboard shortcut support preserved
+      - NDC message log pane (`NdcLog.tsx`) rendered persistently at the
+        bottom of the Emulator view
+  * Inspector panels (all new components):
+      - StatesPanel  — tabular state list, state search, current/exit state
+                       highlighting, per-state screen and opcode preview
+      - StateGraph   — interactive visual graph of all state transitions
+                       rendered with React Flow / XY Flow
+      - ScreensPanel — lists all downloaded screen definitions with preview
+      - FitsPanel    — FIT record table showing institution ID, card ranges,
+                       and processing flags
+      - EmvPanel     — display of received EMV configuration data
+      - CardsPanel   — full card management UI: create card, edit card,
+                       select card for transaction, payment scheme detection
+                       by BIN, swipe simulation
+      - HardwarePanel — live view of simulated hardware component status
+                        (card reader, receipt printer, journal printer,
+                        cassette levels, reject bin)
+      - StatusBar    — persistent status bar showing connection state, ATM
+                       operational mode, current state and screen, LUNO, and
+                       real-time message coordination number
+  * Profile selection screen (`SetupScreen`) on startup allowing users to
+    save, load, and manage named ATM configuration profiles
+  * Dynamic screen rendering: screens are composed from NDC ESC-sequence
+    actions (clear_screen, insert_image, position text, colour/blink control)
+    driven by data received from the host in real time
+
+  ─── DEVELOPER EXPERIENCE ──────────────────────────────────────────────────
+  * Test framework replaced: Vitest replaces Jasmine/Ava
+  * End-to-end test capability added via Playwright (`@playwright/test@^1.48`)
+  * `tsx` added for running TypeScript scripts directly without pre-compiling
+  * Scripts: `npm run build` builds all packages; `npm start` launches
+    Electron; `npm test` runs Vitest unit tests per package
+  * Incremental TypeScript builds via `tsconfig.tsbuildinfo` in each package
+  * Consistent ESLint configuration enforced across the monorepo
+
+  ─── REMOVED / DEPRECATED ──────────────────────────────────────────────────
+  * Removed jQuery dependency
+  * Removed Bootstrap CSS framework
+  * Removed vis.js (state graph now uses React Flow / XY Flow)
+  * Removed all inline `atm-*` npm module dependencies (rolled into monorepo)
+  * Removed `jasmine` and `ava` test runners
+  * Legacy `src/` directory and `index.html` (v1 app) remain in the root for
+    reference but are no longer the active application
+
+─────────────────────────────────────────────────────────────────────────────
+
 February 2018
   1.4.3 protocol-dependent header message support
 

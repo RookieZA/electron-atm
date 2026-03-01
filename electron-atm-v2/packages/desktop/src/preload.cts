@@ -10,6 +10,7 @@ const api: IAtmBridge = {
     // Configuration
     loadConfig: () => ipcRenderer.invoke('config:load'),
     saveConfig: (config: AtmConfig) => ipcRenderer.invoke('config:save', config),
+    deleteConfig: (id: string) => ipcRenderer.invoke('config:delete', id),
 
     // ATM Hardware Actions
     insertCard: (cardData: string) => ipcRenderer.invoke('atm:insertCard', cardData),
@@ -23,7 +24,7 @@ const api: IAtmBridge = {
     resetCounters: () => ipcRenderer.invoke('atm:resetCounters'),
 
     // Host Actions
-    connectToHost: () => ipcRenderer.invoke('host:connect'),
+    connectToHost: (config: AtmConfig) => ipcRenderer.invoke('host:connect', config),
     disconnectFromHost: () => ipcRenderer.invoke('host:disconnect'),
 
     // Subscriptions
