@@ -1,0 +1,42 @@
+{
+    "name": "@atm/desktop",
+    "version": "1.0.0",
+    "main": "./dist/main.js",
+    "types": "./dist/main.d.ts",
+    "type": "module",
+    "scripts": {
+        "build:main": "tsc",
+        "build:render": "vite build",
+        "build": "npm run build:main && npm run build:render",
+        "start": "npm run build && electron .",
+        "test": "vitest run"
+    },
+    "devDependencies": {
+        "@types/node": "^25.3.3",
+        "@types/react": "^19.2.14",
+        "@types/react-dom": "^19.2.3",
+        "@vitejs/plugin-react": "^5.1.4",
+        "autoprefixer": "^10.4.27",
+        "electron": "^40.6.1",
+        "lucide-react": "^0.575.0",
+        "postcss": "^8.5.6",
+        "tailwindcss": "^3.4.19",
+        "vite": "^7.3.1"
+    },
+    "dependencies": {
+        "@atm/core": "^1.0.0",
+        "@radix-ui/react-dialog": "^1.1.15",
+        "@radix-ui/react-label": "^2.1.8",
+        "@radix-ui/react-slot": "^1.2.4",
+        "@radix-ui/react-switch": "^1.2.6",
+        "@xstate/store": "^3.16.0",
+        "@xyflow/react": "^12.10.1",
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2.1.1",
+        "react": "^19.2.4",
+        "react-dom": "^19.2.4",
+        "tailwind-merge": "^3.5.0",
+        "tailwindcss-animate": "^1.0.7",
+        "xstate": "^5.28.0"
+    }
+}
