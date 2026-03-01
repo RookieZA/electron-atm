@@ -31,7 +31,7 @@ You may also build the app from sources. To do this, you'll need [Git](https://g
 
 ```bash
 # Clone this repository
-git clone https://github.com/timgabets/electron-atm
+git clone https://github.com/RookieZA/electron-atm/tree/main
 # Go into the repository
 cd electron-atm
 # Install dependencies
